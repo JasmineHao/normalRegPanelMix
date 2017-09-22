@@ -21,13 +21,13 @@
                 "file" : "C:/Users/haoja/Dropbox/Dropbox/workspace/R/package/normalRegPanelMix/src/cppNormalpanelmixPMLE.cpp",
                 "kind" : 6,
                 "line" : 11,
-                "name" : "cppnormalpanelmixPMLE(NumericMatrix, NumericVector, NumericMatrix, NumericVector, NumericVector, int, int, int, double, int, int, double, double, int, int)",
+                "name" : "cppnormalpanelmixPMLE(NumericMatrix, NumericVector, NumericMatrix, NumericVector, NumericVector, int, int, int, double, int, int, double, double, int, int, int)",
                 "parent_name" : "",
-                "usr" : "c:@F@cppnormalpanelmixPMLE#$@N@Rcpp@C@Matrix>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#$@N@Rcpp@C@Vector>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#S0_#S1_#S1_#I#I#I#d#I#I#d#d#I#I#"
+                "usr" : "c:@F@cppnormalpanelmixPMLE#$@N@Rcpp@C@Matrix>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#$@N@Rcpp@C@Vector>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#S0_#S1_#S1_#I#I#I#d#I#I#d#d#I#I#I#"
             }
         ],
         "file" : "C:/Users/haoja/Dropbox/Dropbox/workspace/R/package/normalRegPanelMix/src/cppNormalpanelmixPMLE.cpp",
-        "file_last_write" : 1483860052
+        "file_last_write" : 1489776078
     },
     {
         "definitions" : [
@@ -36,13 +36,13 @@
                 "file" : "C:/Users/haoja/Dropbox/Dropbox/workspace/R/package/normalRegPanelMix/src/cppRegPanelmixPMLE.cpp",
                 "kind" : 6,
                 "line" : 9,
-                "name" : "cppRegPanelmixPMLE(NumericMatrix, NumericVector, NumericMatrix, NumericMatrix, NumericVector, NumericVector, int, int, int, double, int, int, double, double, int, int)",
+                "name" : "cppRegPanelmixPMLE(NumericMatrix, NumericVector, NumericMatrix, NumericMatrix, NumericVector, NumericVector, int, int, int, double, int, int, double, double, int, int, int)",
                 "parent_name" : "",
-                "usr" : "c:@F@cppRegPanelmixPMLE#$@N@Rcpp@C@Matrix>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#$@N@Rcpp@C@Vector>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#S0_#S0_#S1_#S1_#I#I#I#d#I#I#d#d#I#I#"
+                "usr" : "c:@F@cppRegPanelmixPMLE#$@N@Rcpp@C@Matrix>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#$@N@Rcpp@C@Vector>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#S0_#S0_#S1_#S1_#I#I#I#d#I#I#d#d#I#I#I#"
             }
         ],
         "file" : "C:/Users/haoja/Dropbox/Dropbox/workspace/R/package/normalRegPanelMix/src/cppRegPanelmixPMLE.cpp",
-        "file_last_write" : 1483860224
+        "file_last_write" : 1489280900
     },
     {
         "definitions" : [
@@ -51,13 +51,13 @@
                 "file" : "C:/Users/haoja/Dropbox/Dropbox/workspace/R/package/normalRegPanelMix/src/cppRegmixPMLE.cpp",
                 "kind" : 6,
                 "line" : 10,
-                "name" : "cppRegmixPMLE(NumericMatrix, NumericVector, NumericMatrix, NumericMatrix, NumericVector, NumericVector, int, int, double, int, int, double, double, int, int)",
+                "name" : "cppRegmixPMLE(NumericMatrix, NumericVector, NumericMatrix, NumericMatrix, NumericVector, NumericVector, int, int, double, int, int, double, double, int, int, int)",
                 "parent_name" : "",
-                "usr" : "c:@F@cppRegmixPMLE#$@N@Rcpp@C@Matrix>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#$@N@Rcpp@C@Vector>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#S0_#S0_#S1_#S1_#I#I#d#I#I#d#d#I#I#"
+                "usr" : "c:@F@cppRegmixPMLE#$@N@Rcpp@C@Matrix>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#$@N@Rcpp@C@Vector>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#S0_#S0_#S1_#S1_#I#I#d#I#I#d#d#I#I#I#"
             }
         ],
         "file" : "C:/Users/haoja/Dropbox/Dropbox/workspace/R/package/normalRegPanelMix/src/cppRegmixPMLE.cpp",
-        "file_last_write" : 1481781399
+        "file_last_write" : 1489268047
     },
     {
         "definitions" : [
