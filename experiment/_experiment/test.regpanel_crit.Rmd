@@ -1,0 +1,85 @@
+---
+title: "test.regpanelMaxPhi"
+author: "Jasmine"
+date: "January 13, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r eval=TRUE}
+# library(normalregMix)
+library(normalRegPanelMix)
+#sourceCpp("/Users/Hiro/Dropbox/R/LearningR/src/em_C4.cpp") 
+```
+
+#T=1
+```{r }
+set.seed(123)
+#Generate Data
+N <- 200 #Number of people
+T <- 2 #Time periods
+M <- 2 #Number of Type
+p <- 0 #Number of Z
+q <- 3 #Number of X
+mu <- c(1,2)
+sigma <- c(0.5,0.25)
+gamma <- matrix(0)
+beta <- matrix(1:6,nrow=M)
+
+alpha <- c(0.6,0.4) #Probability
+#Has 0.6 probability to be type 1
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+parlist <- list('alpha' = alpha, 'mubeta' = t(cbind(mu,beta)), 
+                'sigma' = sigma, 'gam' = gamma)
+y <- Data$Y
+z <- Data$Z
+x <- Data$X
+regpanelmixCrit(y = Data$Y,x = Data$X,parlist = parlist,parallel=FALSE)
+# regpanelmixMEMtest(Data$Y,Data$X,m=2,z = Data$Z,crit.method="asy")
+```
+
+```{r Test the validity of the interval}
+ninits = 100
+tauset = c(0.1,0.3,0.5)
+
+regpanelmix.pmle.result    <- regpanelmixPMLE(y=y, x=x, m=m, z=z, vcov.method="none", ninits=ninits)
+an <- anFormula(parlist = regpanelmix.pmle.result$parlist, m = m, n = n, q = q)
+par1    <- regpanelmixMaxPhi(y=y, x=x, parlist=regpanelmix.pmle.result$parlist, z=z,
+                          an=an, tauset = tauset, ninits=ninits,
+                          parallel = parallel, cl = cl)
+emstat  <- 2*(par1$penloglik-regpanelmix.pmle.result$loglik)
+```
+
+```{r}
+regpanelmixMaxPhi(y=Data$Y, x=Data$X, parlist=parlist, z=Data$Z , an=1/N)
+parlist2 <- list('alpha' = alpha, 'mubeta' = mu,
+                'sigma' = sigma, 'gam' = gamma)
+regpanelmixMaxPhi(y=Data$Y, x=NULL, parlist=parlist2, z=Data$Z , an=1/N)
+```
+
+
+Actually I need to make sure this works for q = 0 as well.
+```{r}
+set.seed(123)
+#Generate Data
+N <- 200 #Number of people
+T <- 1 #Time periods
+M <- 2 #Number of Type
+p <- 0 #Number of Z
+q <- 0 #Number of X
+mu <- c(1,2)
+sigma <- c(0.5,0.25)
+gamma <- matrix(0)
+beta <- matrix(0)
+
+alpha <- c(0.6,0.4) #Probability
+#Has 0.6 probability to be type 1
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+parlist <- list('alpha' = alpha, 'mubeta' = t(cbind(mu,beta)), 
+                'sigma' = sigma, 'gam' = gamma)
+htaupair <- c(1,0.1)
+regpanelmixMaxPhi(y=Data$Y, x=Data$X, parlist=parlist, z=Data$Z , an=1/N)
+```

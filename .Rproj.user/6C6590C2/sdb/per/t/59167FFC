@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"test.regpanelMaxPhi\"\nauthor: \"Jasmine\"\ndate: \"January 13, 2017\"\noutput: html_document\n---\n\n```{r setup, include=FALSE}\nknitr::opts_chunk$set(echo = TRUE)\n```\n\n```{r eval=TRUE}\n# library(normalregMix)\nlibrary(normalRegPanelMix)\n#sourceCpp(\"/Users/Hiro/Dropbox/R/LearningR/src/em_C4.cpp\") \n```\n\n#T=1\n```{r }\nset.seed(123)\n#Generate Data\nN <- 200 #Number of people\nT <- 1 #Time periods\nM <- 2 #Number of Type\np <- 0 #Number of Z\nq <- 3 #Number of X\nmu <- c(1,2)\nsigma <- c(0.5,0.25)\ngamma <- matrix(0)\nbeta <- matrix(1:6,nrow=M)\n\nalpha <- c(0.6,0.4) #Probability\n#Has 0.6 probability to be type 1\nData <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)\n\n```\n\n```{r}\nparlist <- list('alpha' = alpha, 'mubeta' = t(cbind(mu,beta)), \n                'sigma' = sigma, 'gam' = gamma)\nhtaupair <- c(1,0.1)\nb_0 <- regpanelmixPhiInit(Data$Y, Data$X, Data$Z , parlist, htaupair[1], htaupair[2])\n\nregpanelmixMaxPhi(y=Data$Y, x=Data$X, parlist=parlist, z=Data$Z , an=1/N)\n\n```\n\n\nActually I need to make sure this works for q = 0 as well.\n```{r}\nset.seed(123)\n#Generate Data\nN <- 200 #Number of people\nT <- 1 #Time periods\nM <- 2 #Number of Type\np <- 0 #Number of Z\nq <- 0 #Number of X\nmu <- c(1,2)\nsigma <- c(0.5,0.25)\ngamma <- matrix(0)\nbeta <- matrix(0)\n\nalpha <- c(0.6,0.4) #Probability\n#Has 0.6 probability to be type 1\nData <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)\nparlist <- list('alpha' = alpha, 'mubeta' = t(cbind(mu,beta)), \n                'sigma' = sigma, 'gam' = gamma)\nhtaupair <- c(1,0.1)\nb_0 <- regpanelmixPhiInit(Data$Y, Data$X, Data$Z , parlist, htaupair[1], htaupair[2])\n\n```",
+    "created" : 1484294761846.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1674913688",
+    "id" : "59167FFC",
+    "lastKnownWriteTime" : 1484641598,
+    "last_content_update" : 1484641598,
+    "path" : "C:/Users/Jasmine/Dropbox/Dropbox/workspace/R/package/normalRegPanelMix/test.regpanelMaxPhi.Rmd",
+    "project_path" : "test.regpanelMaxPhi.Rmd",
+    "properties" : {
+        "last_setup_crc32" : "71F3712Abb338d19",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

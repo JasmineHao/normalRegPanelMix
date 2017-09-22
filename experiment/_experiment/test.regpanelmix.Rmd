@@ -1,0 +1,182 @@
+---
+title: "Test on normal regression panel mixture model identification"
+author: "Jasmine Hao"
+date: "December 21, 2016"
+output:
+html_document: default
+pdf_document: default
+---
+  
+  ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+  ##Load library
+```{r eval=TRUE}
+library(normalregMix)
+library(normalRegPanelMix)
+#sourceCpp("/Users/Hiro/Dropbox/R/LearningR/src/em_C4.cpp") 
+```
+
+Used parameters:
+set.seed(123)
+#Generate Data
+N <- 200 #Number of people
+T <- 1 #Time periods
+M <- 2 #Number of Type
+p <- 0 #Number of Z
+q <- 3 #Number of X
+mu <- c(1,2)
+sigma <- c(0.5,0.25)
+gamma <- matrix(0)
+beta <-  [,1] [,2] [,3]
+         [1,]    1    3    5
+         [2,]    2    4    6
+
+alpha <- c(0.6,0.4) 
+
+#T=1
+```{r }
+set.seed(123)
+#Generate Data
+N <- 200 #Number of people
+T <- 1 #Time periods
+M <- 2 #Number of Type
+p <- 0 #Number of Z
+q <- 3 #Number of X
+mu <- c(1,2)
+sigma <- c(0.5,0.25)
+gamma <- matrix(0)
+beta <- matrix(1:6,nrow=M)
+
+alpha <- c(0.6,0.4) #Probability
+#Has 0.6 probability to be type 1
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+
+```
+
+Try non-panel version fist, use T=1.
+The result should be same for normalpanelmix and normalmix.
+```{r eval=TRUE, warning=FALSE}
+out.cpp<-regpanelmixPMLE(y=Data$Y,x=Data$X,m=2,vcov.method = "none")
+coef.cpp <- getCoefficient(out.cpp$coefficients,N,T,M,p,q)
+eval_f_1 <- function(x){ return(-rNormalPanelMixMLE_vec(x,y=Data$Y,x=Data$X,z=Data$Z,M,p,q))}
+# coef.vec <- c(coef.cpp$alpha,coef.cpp$mu,coef.cpp$sigma,coef.cpp$beta,coef.cpp$gamma)
+coef.vec <- c(coef.cpp$alpha,coef.cpp$mu,coef.cpp$sigma,coef.cpp$beta)
+out.slsqp <- slsqp(coef.vec,eval_f_1)
+```
+
+The comparison between panel and non-panel version under T=1.
+
+```{r}
+print(out.cpp)
+print(regmixPMLE(y=Data$Y,x=Data$X,m=2,vcov.method = "none"))
+```
+
+#T=2
+```{r eval=TRUE, warning=FALSE}
+#NormalPanelMixPMLE
+T <- 2
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+out.cpp <- regpanelmixPMLE(y=Data$Y,x=Data$X,m=M,vcov.method = "none")
+coef.cpp <- getCoefficient(out.cpp$coefficients,N,T,M,p,q)
+eval_f_1 <- function(x){ return(-rNormalPanelMixMLE_vec(x,y=Data$Y,x=Data$X,z=Data$Z,M,p,q))}
+# coef.vec <- c(coef.cpp$alpha,coef.cpp$mu,coef.cpp$sigma,coef.cpp$beta,coef.cpp$gamma)
+coef.vec <- c(coef.cpp$alpha,coef.cpp$mu,coef.cpp$sigma,coef.cpp$beta)
+out.slsqp <- slsqp(coef.vec,eval_f_1)
+```
+The CPP optimization produces
+```{r}
+print(out.cpp)
+```
+
+The r solver with starting point
+```{r}
+print(out.slsqp)
+```
+
+#T=5
+```{r eval=TRUE, warning=FALSE}
+#NormalPanelMixPMLE
+T <- 5
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+out.cpp <- regpanelmixPMLE(y=Data$Y,x=Data$X,m=M,vcov.method = "none")
+coef.cpp <- getCoefficient(out.cpp$coefficients,N,T,M,p,q)
+eval_f_1 <- function(x){ return(-rNormalPanelMixMLE_vec(x,y=Data$Y,x=Data$X,z=Data$Z,M,p,q))}
+# coef.vec <- c(coef.cpp$alpha,coef.cpp$mu,coef.cpp$sigma,coef.cpp$beta,coef.cpp$gamma)
+coef.vec <- c(coef.cpp$alpha,coef.cpp$mu,coef.cpp$sigma,coef.cpp$beta)
+out.slsqp <- slsqp(coef.vec,eval_f_1)
+```
+The CPP optimization produces
+```{r}
+print(out.cpp)
+```
+
+The r solver with starting point
+```{r}
+print(out.slsqp)
+```
+
+
+##T=10
+```{r eval=TRUE, warning=FALSE}
+#NormalPanelMixPMLE
+T <- 10
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+out.cpp <- regpanelmixPMLE(y=Data$Y,x=Data$X,m=M,vcov.method = "none")
+coef.cpp <- getCoefficient(out.cpp$coefficients,N,T,M,p,q)
+eval_f_1 <- function(x){ return(-rNormalPanelMixMLE_vec(x,y=Data$Y,x=Data$X,z=Data$Z,M,p,q))}
+# coef.vec <- c(coef.cpp$alpha,coef.cpp$mu,coef.cpp$sigma,coef.cpp$beta,coef.cpp$gamma)
+coef.vec <- c(coef.cpp$alpha,coef.cpp$mu,coef.cpp$sigma,coef.cpp$beta)
+out.slsqp <- slsqp(coef.vec,eval_f_1)
+```
+The CPP optimization produces
+```{r}
+print(out.cpp)
+```
+
+The r solver with starting point
+```{r}
+print(out.slsqp)
+```
+
+#What if q = 0?
+```{r  warning=FALSE}
+N <- 200 #Number of people
+T <- 10 #Time periods
+M <- 2 #Number of Type
+p <- 3 #Number of Z
+q <- 0 #Number of X
+mu <- c(1,2)
+sigma <- c(0.5,0.25)
+gamma <- c(4:6)
+beta <- matrix(0)
+alpha <- c(0.6,0.4) #Probability
+#Has 0.6 probability to be type 1
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+out.cpp <- regpanelmixPMLE(y=Data$Y,x=Data$X, z = Data$Z,m=M,vcov.method = "none")
+
+coef.cpp <- getCoefficient(out.cpp$coefficients,N,T,M,p,q)
+eval_f_1 <- function(x){ return(-rNormalPanelMixMLE_vec(x,y=Data$Y,x=Data$X,z=Data$Z,M,p,q))}
+# coef.vec <- c(coef.cpp$alpha,coef.cpp$mu,coef.cpp$sigma,coef.cpp$beta,coef.cpp$gamma)
+coef.vec <- c(coef.cpp$alpha,coef.cpp$mu,coef.cpp$sigma,coef.cpp$gamma)
+out.slsqp <- slsqp(coef.vec,eval_f_1)
+
+```
+
+```{r}
+print(out.cpp)
+print(out.slsqp)
+```
+
+```{r}
+normalmixPMLE(y = Data$Y,x = Data$X,z = Data$Z, m = M, vcov.method = "none")
+
+normalpanelmixPMLE(y = Data$Y,x = Data$X,z = Data$Z, m = M, vcov.method = "none")
+
+```

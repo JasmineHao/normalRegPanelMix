@@ -1,0 +1,71 @@
+---
+title: "test.regpanelMaxPhi"
+author: "Jasmine"
+date: "January 13, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r eval=TRUE}
+# library(normalregMix)
+library(normalRegPanelMix)
+#sourceCpp("/Users/Hiro/Dropbox/R/LearningR/src/em_C4.cpp") 
+```
+
+#T=1
+```{r }
+set.seed(123)
+#Generate Data
+N <- 200 #Number of people
+T <- 1 #Time periods
+M <- 2 #Number of Type
+p <- 0 #Number of Z
+q <- 3 #Number of X
+mu <- c(1,2)
+sigma <- c(0.5,0.25)
+gamma <- matrix(0)
+beta <- matrix(1:6,nrow=M)
+
+alpha <- c(0.6,0.4) #Probability
+#Has 0.6 probability to be type 1
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+
+```
+
+```{r}
+parlist <- list('alpha' = alpha, 'mubeta' = t(cbind(mu,beta)), 
+                'sigma' = sigma, 'gam' = gamma)
+htaupair <- c(1,0.1)
+b_0 <- regpanelmixPhiInit(Data$Y, Data$X, Data$Z , parlist, htaupair[1], htaupair[2])
+
+regpanelmixMaxPhi(y=Data$Y, x=Data$X, parlist=parlist, z=Data$Z , an=1/N)
+
+```
+
+
+Actually I need to make sure this works for q = 0 as well.
+```{r}
+set.seed(123)
+#Generate Data
+N <- 200 #Number of people
+T <- 1 #Time periods
+M <- 2 #Number of Type
+p <- 0 #Number of Z
+q <- 0 #Number of X
+mu <- c(1,2)
+sigma <- c(0.5,0.25)
+gamma <- matrix(0)
+beta <- matrix(0)
+
+alpha <- c(0.6,0.4) #Probability
+#Has 0.6 probability to be type 1
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+parlist <- list('alpha' = alpha, 'mubeta' = t(cbind(mu,beta)), 
+                'sigma' = sigma, 'gam' = gamma)
+htaupair <- c(1,0.1)
+b_0 <- regpanelmixPhiInit(Data$Y, Data$X, Data$Z , parlist, htaupair[1], htaupair[2])
+
+```

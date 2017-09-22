@@ -1,0 +1,164 @@
+---
+title: "Test on normal panel mixture model"
+author: "Jasmine Hao"
+date: "December 21, 2016"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+##Load library
+```{r eval=TRUE}
+library(normalregMix)
+library(normalRegPanelMix)
+#sourceCpp("/Users/Hiro/Dropbox/R/LearningR/src/em_C4.cpp") 
+```
+##Test Data generating function
+```{r}
+N <- 300 #Number of people
+T <- 3 #Time periods
+M <- 2 #Number of Type
+p <- 0 #Number of Z
+q <- 2 #Length of beta
+mu <- c(1,2)
+sigma <- c(0.5,0.25)
+# gamma <- matrix(c(1,2,3,4,5,6),nrow=M)
+alpha <- c(0.6,0.4) #Probability
+#Has 0.6 probability to be type 1
+ninits <- 3
+gamma = c(1,2)
+beta = matrix(1:4,nr=M)
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+
+```
+
+
+###Test likelihood function written.
+```{r}
+out<-regpanelmixPMLE(y=Data$Y,x=Data$X, z=Data$Z,m=2,vcov.method = "none")
+
+
+```
+
+##T=1
+
+```{r }
+set.seed(123)
+#Generate Data
+N <- 500 #Number of people
+T <- 2 #Time periods
+M <- 2 #Number of Type
+p <- 0 #Number of Z
+q <- 0 #Length of beta
+mu <- c(1,2)
+sigma <- c(0.5,0.25)
+# gamma <- matrix(c(1,2,3,4,5,6),nrow=M)
+alpha <- c(0.6,0.4) #Probability
+#Has 0.6 probability to be type 1
+ninits <- 3
+gamma = NULL
+beta = NULL
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+```
+
+
+Try non-panel version fist, use T=1.
+The result should be same for normalpanelmix and normalmix.
+```{r eval=TRUE}
+#NormalPanelMixPMLE
+normalpanelmixPMLE(y=Data$Y,m=2,vcov.method = "none")
+normalmixPMLE(y=Data$Y,m=2,vcov.method = "none")
+
+```
+
+##T =2 
+
+```{r}
+set.seed(123)
+#Generate Data
+N <- 500 #Number of people
+T <- 2 #Time periods
+M <- 2 #Number of Type
+p <- 0 #Number of Z
+q <- 0 #Length of beta
+mu <- c(1,2)
+sigma <- c(0.5,0.25)
+
+Data <- generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q)
+out <- normalpanelmixPMLE(y=Data$Y,m=2,vcov.method = "none")
+normalmixPMLE(y=Data$Y,m=2,vcov.method = "none")
+alpha_hat <- as.vector(out$coefficients[1:M])
+mubeta_hat <- as.vector(out$coefficients[M+1:((q+1)*M)])
+mu_hat <- mubeta_hat[(0:(M-1))*(q+1)+1]
+if (q != 0){
+  ind <- rep(0,0)
+  for (mm in 0:(M-1)){
+  ind <- append(ind,(2:(q+1))+mm*(q+1))
+  }
+  beta_hat <- t(matrix(mubeta_hat[ind],nr=q))
+}else{
+  beta_hat = NULL
+}
+
+if (q != 0){
+  gamma_hat <- out$coefficients[((q+3)*M+1):((q+4)*M)]
+}else{
+  gamma_hat <- NULL
+}
+
+sigma_hat <- out$coefficients[((q+2)*M+1):((q+3)*M)]
+
+if (is.null(Data$X)){
+  x <- matrix(0)
+  }else{
+  x <- Data$X
+}
+if (is.null(Data$Z)){
+  z <- matrix(0)
+  }else{
+  z <- Data$X
+  }
+parlist <- list('alpha'=alpha,'mu'=mu,'sigma'=sigma,'gamma'=gamma)
+rNormalPanelMixMLE (alpha_hat,mu_hat,sigma_hat,beta_hat,gamma_hat,Data$Y,Data$X,Data$Z,M,p,q)
+# cppregpanelmixMLE(as.vector(Data$Y),x,z,alpha_hat,mu_hat,sigma_hat,beta_hat,gamma_hat,M,q,p,T)
+
+cppregpanelmixMLE(as.vector(Data$Y),x,z,alpha_hat,mu_hat,sigma_hat,matrix(0),matrix(0),M,q,p,T)
+
+vec <- c(alpha_hat,mu_hat,sigma_hat,beta_hat,gamma_hat)
+rNormalPanelMixMLE_vec(out$coefficients,y=Data$Y,x=Data$X,z=Data$Z,M,p,q)
+eval_f_1 <- function(x){ return(-rNormalPanelMixMLE_vec(x,y=Data$Y,x=Data$X,z=Data$Z,M,p,q))}
+out.slsqp <- slsqp(out$coefficients,eval_f_1)
+print(out$coefficients)
+print(out.slsqp$par)
+```
+
+###Test normal panel mix phi function.
+```{r}
+parlist <- list('alpha'=alpha,'mu'=mu,'sigma'=sigma,'gamma'=gamma)
+an <- 1/N
+normalpanelmixMaxPhi(y = Data$Y,parlist = parlist,an = an)
+```
+
+
+
+```{r eval=FALSE}
+eval_f <- function(x){ return(rNormalPanelMixMLE(Y,b=x,m=2))}
+for (jn in 1:ninits){
+  b_0 <- out$coef[jn,]
+  res <- slsqp(x=b_0,fn = eval_f)
+  print(res$par)
+  print(res$value)
+}
+```
+
+Use random drawn initial value for slsqp of likelihood
+

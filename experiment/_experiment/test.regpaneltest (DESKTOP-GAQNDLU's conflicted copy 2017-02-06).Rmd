@@ -1,0 +1,82 @@
+---
+title: "test of reg panel mix test criteria using simulation"
+author: "Jasmine"
+date: "January 13, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r eval=TRUE}
+# library(normalregMix)
+library(normalRegPanelMix)
+#sourceCpp("/Users/Hiro/Dropbox/R/LearningR/src/em_C4.cpp") 
+```
+
+#T=2
+
+
+```{r eval=TRUE}
+#Generate Data
+N <- 100 #Number of people
+T <- 2 #Time periods, it's important that T > 1
+M <- 2 #Number of Type
+p <- 0 #Number of Z
+q <- 3 #Number of X
+mu <- c(1,2)
+sigma <- c(0.5,0.25)
+gamma <- matrix(0)
+beta <- matrix(1:6,nrow=M)
+alpha <- c(0.6,0.4) #Probability
+parlist <- list('alpha' = alpha, 'mubeta' = t(cbind(mu,beta)), 'sigma' = sigma, 'gam' = gamma)
+nrep = 1000
+#Has 0.6 probability to be type 1
+```
+
+```{r}
+lr.crit <- matrix(0,nr=nrep,ncol=3)
+lr.estimate <- rep(0,nrep)
+lr.estimate.pen <- rep(0,nrep)
+```
+
+```{r warning=FALSE}
+ptm <- proc.time()
+Data <- replicate(nrep,generateData(alpha,mu,sigma,gamma,beta,N,T,M,p,q))
+for (k in 1:nrep){
+  data <- Data[,k]
+  lr.crit[k,] <- regpanelmixCrit(y=data$Y, x=data$X, parlist=parlist, z = data$Z,parallel = FALSE)$crit
+  out.h0 <- regpanelmixPMLE(y=data$Y,x=data$X, z = data$Z,m=M,vcov.method = "none")
+  out.h1 <- regpanelmixPMLE(y=data$Y,x=data$X, z = data$Z,m=M+1,vcov.method = "none")
+  lr.estimate[k] <- out.h1$loglik - out.h0$loglik
+  lr.estimate.pen[k] <- out.h1$penloglik - out.h0$penloglik
+}
+lr.estimate <- 2 * lr.estimate
+lr.estimate.pen <- 2 * lr.estimate.pen
+print(proc.time() - ptm)
+```
+
+Percentage of estimation out of 90% coverage
+```{r}
+print(mean(lr.estimate > lr.crit[,1]))
+print(mean(lr.estimate.pen > lr.crit[,1]))
+```
+Percentage of estimation out of 95% coverage
+```{r}
+print(mean(lr.estimate > lr.crit[,2]))
+print(mean(lr.estimate.pen > lr.crit[,2]))
+```
+
+Percentage of estimation out of 99% coverage
+```{r}
+print(mean(lr.estimate > lr.crit[,3]))
+print(mean(lr.estimate.pen > lr.crit[,3]))
+```
+
+
+```{r echo=FALSE}
+y <- Data$Y
+x <- Data$X
+z <- Data$Z
+```

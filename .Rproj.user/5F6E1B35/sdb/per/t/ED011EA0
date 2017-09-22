@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "#' @description Generates lists of parameters for initial candidates used by\n#' the modified EM test for mixture of normals.\n#' @title normalpanelmixPhiInit\n#' @name normalpanelmixPhiInit\n#' @param y n by 1 vector of data\n#' @param parlist The parameter estimates as a list containing alpha, mu, sigma,\n#' and gamma in the form of (alpha = (alpha_1, ..., alpha_m),\n#' mu = (mu_1, ..., mu_m), sigma = (sigma_1, ..., sigma_m),\n#' gam = (gamma_1, ..., gamma_m))\n#' @param z n by p matrix of regressor associated with gamma\n#' @param h h used as index for pivoting\n#' @param tau Tau used to split the h-th component\n#' @param ninits number of initial values to be generated\n#' @return A list with the following items:\n#' \\item{alpha}{m+1 by ninits matrix for alpha}\n#' \\item{mu}{m+1 by ninits matrix for mu}\n#' \\item{sigma}{m+1 by ninits matrix for sigma}\n#' \\item{gam}{m+1 by ninits matrix for gamma}\nnormalpanelmixPhiInit <- function (y, parlist, z = NULL, h, tau, ninits = 1)\n{\n  # if (normalregMix.test.on) # initial values controlled by normalregMix.test.on\n  #   set.seed(normalregMix.test.seed)\n\n  t  <- nrow(y)\n  n  <- ncol(y)\n  p     <- ncol(z)\n\n  mu0      <- parlist$mu\n  sigma0   <- parlist$sigma\n  alpha0   <- parlist$alpha\n  m       <- length(alpha0)\n\n  if (is.null(z))\n    gam <- NULL\n  else {\n    gam0  <- parlist$gam\n    y    <- y - z %*% gam0\n    gam <- matrix(runif(p*ninits,min=0.5,max=1.5),nrow=p)*gam0\n  }\n\n  if (m>=2){\n    mid <- (mu0[1:(m-1)]+mu0[2:m])/2  # m-1 by 1\n    lb0 <- c(min(y),mid)        # m by 1\n    lb  <- c(lb0[1:h],lb0[h:m])      # m+1 by 1\n    ub0 <- c(mid,max(y))        # m by 1\n    ub  <- c(ub0[1:h],ub0[h:m])      # m+1 by 1\n  } else {\n    lb  <- c(min(y),min(y))\n    ub  <- c(max(y),max(y))\n  }\n\n  mu <- matrix(runif((m+1)*ninits,min=lb,max=ub),nrow=m+1)\n\n  sigma.hyp <- c(sigma0[1:h],sigma0[h:m])  # m+1 by 1\n  sigma <- matrix(runif((m+1)*ninits,min=sigma.hyp*0.25,max=sigma.hyp*2),nrow=m+1)\n\n  alpha.hyp <- c(alpha0[1:h],alpha0[h:m])  # m+1 by 1\n  alpha.hyp[h:(h+1)] <- c(alpha.hyp[h]*tau,alpha.hyp[h+1]*(1-tau))\n  alpha <- matrix(rep.int(alpha.hyp,ninits),nrow=m+1)\n\n  list(alpha = alpha, mu = mu, sigma = sigma, gam = gam)\n\n}  # end function normalpanelmixPhiInit\n",
+    "created" : 1484642577198.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "335742662",
+    "id" : "ED011EA0",
+    "lastKnownWriteTime" : 1484002017,
+    "last_content_update" : 1484002017,
+    "path" : "C:/Users/haoja/Dropbox/Dropbox/workspace/R/package/normalRegPanelMix_0.3/R/normalpanelmixPhiInit.R",
+    "project_path" : "R/normalpanelmixPhiInit.R",
+    "properties" : {
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
