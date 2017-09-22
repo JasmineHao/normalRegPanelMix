@@ -10,10 +10,12 @@ License: GPL (>= 2)
 Depends:
     R (>= 2.14.0),Rcpp,
     RcppArmadillo,
-    nloptr
+    nloptr,
+    foreach,
+    doParallel
 Imports:
     Rcpp (>= 0.12.8),
     RcppArmadillo,
     nloptr
-LinkingTo: Rcpp, RcppArmadillo
+LinkingTo: Rcpp (>= 0.11.1), RcppArmadillo (>= 0.4.200.0)
 RoxygenNote: 5.0.1
