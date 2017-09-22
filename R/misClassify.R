@@ -189,6 +189,7 @@ anFormula <- function(parlist, m, n, t, q = 0)
   if (q != 0) # an when the dimension of X is not zero.
     #return (switch(as.character(q), "1" = 0.5, "2" = 2.0, "3" = 2.4, "4" = 2.4, 0.5))
     return (switch(as.character(m), "1" =  2*0.1245674, "2" = 2*0.07366668, "3" = 2* 0.05529925, 0.5))
+    # return (0.5)
   if (m == 1) {
     #   an <- 1.0
     an <- 0.50
