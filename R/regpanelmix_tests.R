@@ -239,9 +239,9 @@ regpanelmixMEMtest <- function (y, x, t, m = 2, z = NULL, tauset = c(0.1,0.3,0.5
     an <-  anFormula(parlist = regpanelmix.pmle.result$parlist, m = m, n = n, q = q, t=t)
   if (q == 0){
     # regpanelmix.pmle.result.1  <- normalpanelmixPMLE(y=y, x=x, m=m+1, z=z, vcov.method="none", ninits=ninits) #NEED TO FIX?
-    regpanelmix.pmle.result.1 <- normalpanelmixMaxPhi(y=y ,parlist = regpanelmix.pmle.result$parlist, update.alpha = 1,an=an)
+    regpanelmix.pmle.result.1 <- normalpanelmixMaxPhi(y=y , z = z, parlist = regpanelmix.pmle.result$parlist, update.alpha = 1,an=an)
   }else{
-    regpanelmix.pmle.result.1  <- regpanelmixPMLE(y=y, x=x, m=m+1, z=z, vcov.method="none", ninits=ninits)
+    regpanelmix.pmle.result.1  <- regpanelmixMaxPhi(y=y, x=x, z=z ,parlist = regpanelmix.pmle.result$parlist, update.alpha = 1,an=an)
   }
   
   

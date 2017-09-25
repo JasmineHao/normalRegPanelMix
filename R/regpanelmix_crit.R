@@ -431,8 +431,11 @@ regpanelmixCritBoot <- function (y, x, parlist, z = NULL, values = NULL, ninits 
   if (parallel) {
     if (is.null(cl)){
       cl <- makeCluster(detectCores())}
-    registerDoParallel(cl)
-    out <- foreach (j.btsp = 1:nbtsp) %dopar% {
+    
+      registerDoParallel(cl)
+      print("Parallel Bootstrap Crit")
+      # print(paste("an=",an))
+      out <- foreach (j.btsp = 1:nbtsp) %dopar% {
       regpanelmixMEMtest (y = ybset[,j.btsp]$Y, x = ybset[,j.btsp]$X , m = m, t = t, an = an,
                           z = z, ninits = ninits, crit.method = "none") }
     on.exit(cl)
