@@ -373,7 +373,7 @@ regpanelmixCrit <- function(y, x, parlist, z = NULL, values = NULL, parallel = T
 #' \item{crit}{3 by 3 matrix of (0.1, 0.05, 0.01 critical values), jth row corresponding to k=j}
 #' \item{pvals}{A vector of p-values at k = 1, 2, 3}
 regpanelmixCritBoot <- function (y, x, parlist, z = NULL, values = NULL, ninits = 100,
-                                 nbtsp = 199, parallel = FALSE, an = NULL, cl = NULL) {
+                                 nbtsp = 199, parallel = FALSE, an = 0.5, cl = NULL) {
   # if (normalregpanelmix.test.on) # initial values controlled by normalregpanelmix.test.on
   #   set.seed(normalregpanelmix.test.seed)
 
@@ -391,6 +391,8 @@ regpanelmixCritBoot <- function (y, x, parlist, z = NULL, values = NULL, ninits 
   gam   <- parlist$gam
   m       <- length(alpha)
   
+  
+  
   if (!is.null(z)) {
     z <- as.matrix(z)
     p <- ncol(z)
@@ -404,7 +406,7 @@ regpanelmixCritBoot <- function (y, x, parlist, z = NULL, values = NULL, ninits 
     x     <- as.matrix(x)
     q     <- ncol(x)
     mu <- mubeta[1,]
-    beta <- mubeta[2:(q+1),]  #THIS COULD BE WRONG
+    beta <- mubeta[2:(q+1),]  #CHECKED
   }else{
     q <- 0
     mu <- mubeta
@@ -418,8 +420,9 @@ regpanelmixCritBoot <- function (y, x, parlist, z = NULL, values = NULL, ninits 
 
   # Generate bootstrap observations
   
-  ybset <- replicate(nbtsp, generateData(N = n, T = t,M=m ,alpha = alpha, mu = mu, beta = beta, sigma = sigma,p= p,q=q)$Y)
-
+  ybset <- replicate(nbtsp, generateData(N = n, T = t,M=m ,alpha = alpha, mu = mu, beta = beta, sigma = sigma,p= p,q=q))
+  # tmp <- lapply(seq_len(ncol(tmp)),function(i) tmp[,i])
+   
   if (!is.null(z)) {
     zgam <- as.matrix(z) %*% gam
     ybset <- ybset + replicate(nbtsp, as.vector(zgam))
@@ -430,15 +433,16 @@ regpanelmixCritBoot <- function (y, x, parlist, z = NULL, values = NULL, ninits 
       cl <- makeCluster(detectCores())}
     registerDoParallel(cl)
     out <- foreach (j.btsp = 1:nbtsp) %dopar% {
-      regpanelmixMEMtest (ybset[,,j.btsp], x = x, m = m, t = t, an = an,
+      regpanelmixMEMtest (y = ybset[,j.btsp]$Y, x = ybset[,j.btsp]$X , m = m, t = t, an = an,
                           z = z, ninits = ninits, crit.method = "none") }
     on.exit(cl)
   }
   else
     {
-    
-    out <- apply(ybset, 3, regpanelmixMEMtest, x = x, m = m, t = t, z = z,
-                 ninits = ninits, crit.method = "none")
+      out <- lapply(seq_len(ncol(ybset)), 
+                    function(i) regpanelmixMEMtest(y = ybset[,i]$Y,x=ybset[,i]$X,m=M,t=T,z=NULL,ninits=10,crit.method = "none"))
+    # out <- apply(ybset, 3, regpanelmixMEMtest, x = x, m = m, t = t, z = z,
+                 # ninits = ninits, crit.method = "none")
     }
   emstat.b <- sapply(out, "[[", "emstat")  # 3 by nbstp matrix
   emstat.b <- sort(emstat.b)

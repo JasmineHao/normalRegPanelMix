@@ -11,7 +11,7 @@ Tset <- c(2,5,10)
 alphaset <- list(c(0.5,0.5),c(0.2,0.8))
 muset <- list(c(-1,1),c(-0.5,0.5))
 sigma <- c(0.8,1.2)
-beta <- c(0,0)
+betaset <- list(c(0,0),c(-1,1))
 
 GenerateSample <- function(phi,nrep){ 
   p = phi$p
@@ -46,7 +46,7 @@ getEstimate <- function(Data,nrep,an,cl){
   }# out.h1 <- regpanelmixPMLE(y=data$Y,x=data$X, z = data$Z,m=M+1,vcov.method = "none")
   
   # crit <- regpanelmixCrit(y=data$Y, x=data$X, parlist=out.h0$parlist, z = data$Z,cl=cl , parallel = TRUE,nrep=1000)$crit
-  crit <- regpanelmixCritBoot(y=data$Y, x=data$X, parlist=out.h0$parlist, z = data$Z,cl=cl , parallel = TRUE)$crit
+  crit <- regpanelmixCritBoot(y=data$Y, x=data$X, parlist=out.h0$parlist, z = data$Z,cl=cl ,an=an, parallel = TRUE)$crit
   for ( k in 1:nrep){
     lr.crit[k,] <- crit
     lr.size[k,] <- 1 * (lr.estimate[k,] > lr.crit[k,2])
@@ -57,7 +57,7 @@ getEstimate <- function(Data,nrep,an,cl){
 
 #GeneratePhiDataPairs
 count <- 0
-nrep <- 1
+nrep <- 200
 phi.data <- list()
 nset <- length(Nset) * length(Tset) * length(muset) * length(alphaset)
 
@@ -76,24 +76,27 @@ for (r in 1:nNT){
   count <- 0
   for (mu in muset){
     for (alpha in alphaset){
-      cl <- makeCluster(7)
-      
-      t <- Sys.time()
-      phi = list(alpha = alpha,mu = mu,sigma = sigma, gamma = gamma,
-                 beta = beta, N = N, T = T, M = M, p = p, q = q)
-      
-      phi.data.pair <- GenerateSample(phi,nrep)
-      count <- count + 1
-      Data = phi.data.pair$Data
-      phi = phi.data.pair$phi
-      # phi.data[[count]] <- phi.data.pair
-      an <- anFormula(phi,M,N,T,q=1) #The an function according the the empirical regression
-      result <- getEstimate(Data,nrep,an,cl)
-      
-      # print(result$nominal.size)
-      result.f[r, count] <- result$nominal.size
-      print(Sys.time() - t)
-      
+      for (beta in betaset){
+        cl <- makeCluster(7)
+        
+        t <- Sys.time()
+        phi = list(alpha = alpha,mu = mu,sigma = sigma, gamma = gamma,
+                   beta = beta, N = N, T = T, M = M, p = p, q = q)
+        
+        phi.data.pair <- GenerateSample(phi,nrep)
+        count <- count + 1
+        Data = phi.data.pair$Data
+        phi = phi.data.pair$phi
+        # phi.data[[count]] <- phi.data.pair
+        an <- anFormula(phi,M,N,T,q=1) #The an function according the the empirical regression
+        # an <- 1.0
+        print(an)
+        result <- getEstimate(Data,nrep,an,cl)
+        
+        # print(result$nominal.size)
+        result.f[r, count] <- result$nominal.size
+        print(Sys.time() - t)
+      }  
     }
     
   }
