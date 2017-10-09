@@ -392,7 +392,6 @@ regpanelmixCritBoot <- function (y, x, parlist, z = NULL, values = NULL, ninits 
   m       <- length(alpha)
   
   
-  
   if (!is.null(z)) {
     z <- as.matrix(z)
     p <- ncol(z)
@@ -413,7 +412,8 @@ regpanelmixCritBoot <- function (y, x, parlist, z = NULL, values = NULL, ninits 
     beta  <- NULL
   }
   
-
+  an    <- anFormula(parlist = parlist, m = m, n = n, t = t, q = q)
+  
 
   pvals <- NULL
   
@@ -434,7 +434,7 @@ regpanelmixCritBoot <- function (y, x, parlist, z = NULL, values = NULL, ninits 
     
       registerDoParallel(cl)
       print("Parallel Bootstrap Crit")
-      # print(paste("an=",an))
+      print(paste("an=",an))
       out <- foreach (j.btsp = 1:nbtsp) %dopar% {
       regpanelmixMEMtest (y = ybset[,j.btsp]$Y, x = ybset[,j.btsp]$X , m = m, t = t, an = an,
                           z = z, ninits = ninits, crit.method = "none") }
@@ -443,7 +443,7 @@ regpanelmixCritBoot <- function (y, x, parlist, z = NULL, values = NULL, ninits 
   else
     {
       out <- lapply(seq_len(ncol(ybset)), 
-                    function(i) regpanelmixMEMtest(y = ybset[,i]$Y,x=ybset[,i]$X,m=M,t=T,z=NULL,ninits=10,crit.method = "none"))
+                    function(i) regpanelmixMEMtest(y = ybset[,i]$Y,x=ybset[,i]$X,m=M,t=T,z=NULL,ninits=10,an=an,crit.method = "none"))
     # out <- apply(ybset, 3, regpanelmixMEMtest, x = x, m = m, t = t, z = z,
                  # ninits = ninits, crit.method = "none")
     }

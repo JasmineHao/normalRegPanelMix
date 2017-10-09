@@ -19,7 +19,7 @@ ind_list <- c("Food","Textile", "Wood","Paper", "Chemical",
               "Other")
 
   
-df <- read.csv(file="C:/Users/haoja/Dropbox/Dropbox/GNR/R/data_production_function_missing2zero.csv")
+df <- read.csv(file="C:/Users/Jasmine/Dropbox/GNR/R/data_production_function_missing2zero.csv")
 df[df==0] <- NA
 #Function
 #source("C:/Users/Jasmine/Dropbox/GNR/R/productionEstimation.R")

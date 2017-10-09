@@ -74,12 +74,12 @@ print("workers loaded.")
 
 #GeneratePhiDataPairs
 count <- 0
-nrep <- 5
+nrep <- 200
 phi.data <- list()
-nset <- length(Nset) * length(Tset) * length(muset) * length(alphaset)
+nset <- length(Nset) * length(Tset) * length(muset) * length(alphaset) * length(betaset)
 
 NTset <- expand.grid(Nset,Tset)
-Parset <- expand.grid(muset,alphaset)
+Parset <- expand.grid(muset,alphaset,betaset)
 nNT <- dim(NTset)[1]
 nPar <- dim(Parset)[1]
 result.f <- matrix(0,nr=(nNT),nc=nPar)
