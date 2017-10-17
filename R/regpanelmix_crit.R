@@ -405,7 +405,7 @@ regpanelmixCritBoot <- function (y, x, parlist, z = NULL, values = NULL, ninits 
     x     <- as.matrix(x)
     q     <- ncol(x)
     mu <- mubeta[1,]
-    beta <- mubeta[2:(q+1),]  #CHECKED
+    beta <- t(mubeta[2:(q+1),])  #CHECKED
   }else{
     q <- 0
     mu <- mubeta
